@@ -224,7 +224,6 @@ nav h1 a {
   width: 90%;
   border-top-left-radius: 15px;
   display:block;
-  margin: 0 auto;
 }
 #restaurant-address {
   font-size: 22pt;
@@ -240,7 +239,7 @@ nav h1 a {
   text-align: center;
   text-transform: uppercase;
   width: 90%;
-  margin: 0 auto;
+  margin: 0;
 }
 #restaurant-container {
   order: 1;
@@ -252,6 +251,8 @@ nav h1 a {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 10px;
+  width: 90%;
+  margin: 0 auto;
 }
 
 #reviews-container h2 {
@@ -325,14 +326,21 @@ nav h1 a {
   }
 
   #restaurant-container {
-    max-width: calc(50% - 20px);
+    max-width: calc(50% - 40px);
     order: 0;
+    margin-left: 20px;
   }
+
+
 
   #reviews-list li {
     width: 100%;
     max-width: calc(50% - 25px);
     margin-left: 10px;
+  }
+  #reviews-container {
+    width: calc(100% - 20px);
+    margin-left: 20px;
   }
 }
 
