@@ -227,7 +227,7 @@ nav h1 a {
   margin: 0 auto;
 }
 #restaurant-address {
-  font-size: 12pt;
+  font-size: 22pt;
   margin: 10px 0px;
 }
 #restaurant-cuisine {
@@ -272,6 +272,7 @@ nav h1 a {
   list-style-type: none;
   margin: 0 0 30px;
   border-top-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
 .date {
