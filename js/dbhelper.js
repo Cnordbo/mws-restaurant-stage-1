@@ -150,7 +150,29 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    var imageinfo = DBHelper.getImageDetails(restaurant);
+    return (`/img/dist/${imageinfo.name}-original.${imageinfo.filetype}`);
+  }
+
+  static srcsetForRestaurant(restaurant) {
+    var imageinfo = DBHelper.getImageDetails(restaurant);
+    let src = '';
+    src += `/img/dist/${imageinfo.name}-320px.${imageinfo.filetype} 320w, `;
+    src += `/img/dist/${imageinfo.name}-640px.${imageinfo.filetype} 640w, `;
+    src += `/img/dist/${imageinfo.name}-640px.${imageinfo.filetype} 2x`;
+    return src;
+  }
+
+  static getImageDetails(restaurant) {
+    var response = {
+      name: '',
+      filetype: ''
+    };
+    var details = restaurant.photograph.split('.');
+    response.filetype = details[details.length-1];
+    // We use details.length-2 to get rid of the trailing punctuation as well from the name
+    response.name = restaurant.photograph.substring(0, details[details.length-2].length);
+    return response;
   }
 
   /**
