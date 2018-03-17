@@ -1,5 +1,3 @@
-console.log("Service worker loaded 2",this);
-
 var self = this;
 
 self.addEventListener('fetch', event => {
@@ -15,9 +13,9 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        return fetch(event.request).then(r => {
-          cache.put(event.request,r.clone()).then(() => {
-          });
+        return fetch(event.request)
+        .then(r => {
+          cache.put(event.request,r.clone())
           return r;
         });
       });
