@@ -16,8 +16,6 @@ self.addEventListener('fetch', event => {
   if (url.origin != location.origin) {
     return;
   }
-  console.log("URL: ", url);
-  console.log("Path: ", url.pathname);
   if (url.origin === location.origin && url.pathname === "/") {
     req = new Request("/index.html");
   }
