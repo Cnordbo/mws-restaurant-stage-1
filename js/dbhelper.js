@@ -28,6 +28,10 @@ class DBHelper {
         callback(error, null);
       }
     };
+    xhr.onerror = () => {
+      const error = (`Request failed. Returned status of ${xhr.status}`);
+      callback(error,null);
+    };
     xhr.send();
   }
 

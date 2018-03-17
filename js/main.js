@@ -98,7 +98,11 @@ updateRestaurants = () => {
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
-      console.error(error);
+      console.log("Failed to fetch restaurants");
+      const ul = document.getElementById('restaurants-list');
+      const li = document.createElement('li');
+      li.innerHTML = '<p role="alert">You appear to be offline - go online to view restaurants</p>'
+      ul.append(li);
     } else {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
