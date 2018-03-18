@@ -97,12 +97,14 @@ updateRestaurants = () => {
   const neighborhood = nSelect[nIndex].value;
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
+    console.log("Error: ", error);
     if (error) { // Got an error!
       const ul = document.getElementById('restaurants-list');
       const li = document.createElement('li');
       li.innerHTML = '<p role="alert">You appear to be offline - go online to view restaurants</p>'
       ul.append(li);
     } else {
+      console.log("No errors: ", restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
