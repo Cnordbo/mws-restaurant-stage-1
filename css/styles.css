@@ -80,10 +80,19 @@ nav h1 a {
 }
 
 /* Add a slash symbol (/) before/behind each list item */
-#breadcrumb li+li:before {
-    padding: 8px;
-    color: black;
-    content: "/\00a0";
+nav #breadcrumb li + li::before {
+  display: inline-block;
+  margin: 0 .50em;
+  transform: rotate(15deg);
+  border-right: .1em solid currentColor;
+  height: 12px;
+  content: '';
+}
+
+nav #breadcrumb [aria-current="page"] {
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 /* Add a color to all links inside the list */
