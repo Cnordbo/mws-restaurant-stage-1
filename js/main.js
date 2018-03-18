@@ -15,7 +15,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 observer = new IntersectionObserver(changes => {
   for (const change of changes) {
+    if (!change.isIntersecting) return;
     console.log("element changed: ", change);
+    var target = change.target;
+    target.setAttribute('srcset',target.getAttribute('data-srcset'));
+    target.setAttribute('src',target.getAttribute('data-src'));
+    observer.unobserve(target);
+    //Set attributes for src and srcset
+    //unobserve
   }
 });
 
@@ -151,9 +158,10 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.setAttribute('alt','Picture of the restaurant ' + restaurant.name);
-  image.setAttribute('srcset',DBHelper.srcsetForRestaurant(restaurant));
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(restaurant));
+  image.setAttribute('data-src',DBHelper.imageUrlForRestaurant(restaurant));
   li.append(image);
+  observer.observe(image);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
