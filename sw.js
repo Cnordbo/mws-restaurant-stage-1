@@ -3,7 +3,7 @@ const cacheName = "mws-stage-1-r2";
 
 self.addEventListener("install", event => {
   console.log("Installing");
-  const staticFiles = ["/","/index.html","/js/common.js","/js/dbhelper.js","/js/main.js","/js/idb.js","/js/restaurant_info.js","/css/styles.css"];
+  const staticFiles = ["/","/index.html","/manifest.json","/js/common.js","/js/dbhelper.js","/js/main.js","/js/idb.js","/js/restaurant_info.js","/css/styles.css"];
   event.waitUntil(caches.open(cacheName).then(cache => {
     return cache.addAll(staticFiles);
   }));
