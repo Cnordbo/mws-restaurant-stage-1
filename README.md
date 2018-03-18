@@ -11,7 +11,7 @@ For the **Restaurant Reviews** projects, you will incrementally convert a static
 You have been provided the code for a restaurant reviews website. The code has a lot of issues. It’s barely usable on a desktop browser, much less a mobile device. It also doesn’t include any standard accessibility features, and it doesn’t work offline at all. Your job is to update the code to resolve these issues while still maintaining the included functionality. 
 
 ### What do I do from here?
-1. Download the server repository (https://github.com/udacity/mws-restaurant-stage-2/) and follow the setup for starting this. 
+1. Download the server repository (https://github.com/udacity/mws-restaurant-stage-2/) and follow the setup for starting this on port `1337`. 
 2. Edit `.tmp/localDiskDb.db` - add the key-value pair `photograph: "10",` to the last restaurant entry (bug filed: https://github.com/udacity/mws-restaurant-stage-2/issues/4)
 
 3. In this folder, start up a simple HTTP server to serve up the site files on your local computer. Python has some simple tools to do this, and you don't even need to know Python. For most people, it's already installed on your computer. 
