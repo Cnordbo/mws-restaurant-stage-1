@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 observer = new IntersectionObserver(changes => {
   for (const change of changes) {
     if (!change.isIntersecting) return;
-    console.log("element changed: ", change);
     var target = change.target;
     target.setAttribute('srcset',target.getAttribute('data-srcset'));
     target.setAttribute('src',target.getAttribute('data-src'));
