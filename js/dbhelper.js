@@ -36,7 +36,6 @@ class DBHelper {
             resolve(result);
           } else {
             DBHelper.fetchFromWebAndSaveToDb().then(listFromWeb => {
-              console.log("fetch from DB: ", listFromWeb);
               resolve(listFromWeb);
             }).catch(reject);
           }
@@ -124,14 +123,12 @@ class DBHelper {
     // Fetch all restaurants
 
     DBHelper.fetchRestaurants().then(results => {
-      console.log("Results: ", results);
       if (cuisine != 'all') { // filter by cuisine
         results = results.filter(r => r.cuisine_type == cuisine);
       }
       if (neighborhood != 'all') { // filter by neighborhood
         results = results.filter(r => r.neighborhood == neighborhood);
       }
-      console.log("Results: ", results);
       callback(null,results);
     }).catch((e) => {
       callback(e,null)
@@ -175,7 +172,6 @@ class DBHelper {
   }
 
   static srcsetForRestaurant(restaurant) {
-    console.log("Creating SrcSet For: ", restaurant);
     var imageinfo = DBHelper.getImageDetails(restaurant);
     let src = '';
     src += `/img/dist/${imageinfo.name}-320px.${imageinfo.filetype} 320w, `;
@@ -185,7 +181,6 @@ class DBHelper {
   }
 
   static getImageDetails(restaurant) {
-    console.log("GetImageDetails: ", restaurant);
     var response = {
       name: '',
       filetype: ''
