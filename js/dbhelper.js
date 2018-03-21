@@ -185,10 +185,17 @@ class DBHelper {
       name: '',
       filetype: ''
     };
-    var details = restaurant.photograph.split('.') || [];
-    response.filetype = "jpg";
+    var details = [];
+    if (restaurant.photograph) {
+      details = restaurant.photograph.split('.') || [];
+      response.filetype = "jpg";
+      response.name = restaurant.photograph;
+    } else {
+      response.name = "logo";
+      response.filetype = "png";
+    }
+
     // We use details.length-2 to get rid of the trailing punctuation as well from the name
-    response.name = restaurant.photograph;
     return response;
   }
 

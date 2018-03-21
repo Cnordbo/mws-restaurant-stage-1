@@ -115,7 +115,9 @@ updateRestaurants = () => {
       const li = document.createElement('li');
       li.innerHTML = '<p role="alert">You appear to be offline - go online to view restaurants</p>'
       ul.append(li);
+      console.log("GOT ERROR");
     } else {
+      console.log("RESETTING", restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
@@ -141,10 +143,13 @@ resetRestaurants = (restaurants) => {
  * Create all restaurants HTML and add them to the webpage.
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
+  console.log("ADDIGN MARKGERS", restaurants);
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
+    console.log("appending markers");
     ul.append(createRestaurantHTML(restaurant));
   });
+  console.log("MARKERS")
   addMarkersToMap();
 }
 
@@ -187,6 +192,7 @@ createRestaurantHTML = (restaurant) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+  console.log("adding restaurants", restaurants);
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
