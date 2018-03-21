@@ -15,6 +15,16 @@ gulp.task('images', function () {
       }, {
         // Compress, strip metadata, and rename original image
         rename: { suffix: '-original' },
+      },
+      {
+        width: 320,
+        rename: { suffix: '-320px', extname:'.webp' },
+      }, {
+        width: 640,
+        rename: { suffix: '-640px', extname:'.webp' },
+      }, {
+        // Compress, strip metadata, and rename original image
+        rename: { suffix: '-original', extname:'.webp' },
       }]
     }, {
       // Global configuration for all images
