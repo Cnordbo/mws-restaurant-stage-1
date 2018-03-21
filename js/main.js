@@ -20,8 +20,6 @@ observer = new IntersectionObserver(changes => {
     target.setAttribute('srcset',target.getAttribute('data-srcset'));
     target.setAttribute('src',target.getAttribute('data-src'));
     observer.unobserve(target);
-    //Set attributes for src and srcset
-    //unobserve
   }
 });
 
@@ -115,9 +113,7 @@ updateRestaurants = () => {
       const li = document.createElement('li');
       li.innerHTML = '<p role="alert">You appear to be offline - go online to view restaurants</p>'
       ul.append(li);
-      console.log("GOT ERROR");
     } else {
-      console.log("RESETTING", restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
@@ -143,13 +139,10 @@ resetRestaurants = (restaurants) => {
  * Create all restaurants HTML and add them to the webpage.
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
-  console.log("ADDIGN MARKGERS", restaurants);
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
-    console.log("appending markers");
     ul.append(createRestaurantHTML(restaurant));
   });
-  console.log("MARKERS")
   addMarkersToMap();
 }
 
