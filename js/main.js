@@ -16,10 +16,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 observer = new IntersectionObserver(changes => {
   for (const change of changes) {
     if (!change.isIntersecting) return;
-    var target = change.target;
-    target.setAttribute('srcset',target.getAttribute('data-srcset'));
-    target.setAttribute('src',target.getAttribute('data-src'));
-    observer.unobserve(target);
+    var targets = change.target.childNodes;
+    console.log(targets);
+    for (const target of targets) {
+      target.setAttribute('srcset',target.getAttribute('data-srcset'));
+      target.setAttribute('src',target.getAttribute('data-src'));
+    }
+    observer.unobserve(change.target);
   }
 });
 
@@ -152,13 +155,22 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.setAttribute('alt','Picture of the restaurant ' + restaurant.name);
-  image.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(restaurant));
-  image.setAttribute('data-src',DBHelper.imageUrlForRestaurant(restaurant));
-  li.append(image);
-  observer.observe(image);
+  const newImage = document.createElement('picture');
+  newImage.className = 'restaurant-img';
+  console.log("TEst");
+  DBHelper.getSourcesForRestaurant(restaurant).map(el => {
+    newImage.append(el);
+  })
+  console.log("TEst 2");
+
+
+  // const image = document.createElement('img');
+  // image.className = 'restaurant-img';
+  // image.setAttribute('alt','Picture of the restaurant ' + restaurant.name);
+  // image.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(restaurant));
+  // image.setAttribute('data-src',DBHelper.imageUrlForRestaurant(restaurant));
+  li.append(newImage);
+  observer.observe(newImage);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
