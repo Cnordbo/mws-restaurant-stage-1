@@ -156,18 +156,9 @@ createRestaurantHTML = (restaurant) => {
 
   const newImage = document.createElement('picture');
   newImage.className = 'restaurant-img';
-  console.log("TEst");
   DBHelper.getSourcesForRestaurant(restaurant).map(el => {
     newImage.append(el);
-  })
-  console.log("TEst 2");
-
-
-  // const image = document.createElement('img');
-  // image.className = 'restaurant-img';
-  // image.setAttribute('alt','Picture of the restaurant ' + restaurant.name);
-  // image.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(restaurant));
-  // image.setAttribute('data-src',DBHelper.imageUrlForRestaurant(restaurant));
+  });
   li.append(newImage);
   observer.observe(newImage);
 
