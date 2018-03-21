@@ -17,7 +17,6 @@ observer = new IntersectionObserver(changes => {
   for (const change of changes) {
     if (!change.isIntersecting) return;
     var targets = change.target.childNodes;
-    console.log(targets);
     for (const target of targets) {
       target.setAttribute('srcset',target.getAttribute('data-srcset'));
       target.setAttribute('src',target.getAttribute('data-src'));
