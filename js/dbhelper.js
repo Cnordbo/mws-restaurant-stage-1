@@ -186,9 +186,11 @@ class DBHelper {
     }
     let jpeg = document.createElement('SOURCE');
     jpeg.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(filename,ext));
+    jpeg.setAttribute('data-src',DBHelper.imageUrlForFile(filename,ext));
 
     let webp = document.createElement('SOURCE');
     webp.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(filename,'webp'));
+    webp.setAttribute('data-src',DBHelper.imageUrlForFile(filename,'webp'));
     webp.setAttribute('type','image/webp');
 
     let fallback = document.createElement('img');
