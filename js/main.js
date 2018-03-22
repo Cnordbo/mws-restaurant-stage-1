@@ -158,6 +158,7 @@ createRestaurantHTML = (restaurant) => {
   newImage.className = 'restaurant-img';
   newImage.setAttribute('alt', 'Picture of ' + restaurant.name + " restaurant");
   DBHelper.getSourcesForRestaurant(restaurant).map(el => {
+    el.setAttribute('alt', 'Picture of ' + restaurant.name + " restaurant");
     newImage.append(el);
   });
   li.append(newImage);

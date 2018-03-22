@@ -61,6 +61,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   DBHelper.getSourcesForRestaurant(restaurant).map(el => {
     el.setAttribute('srcset',el.getAttribute('data-srcset'));
     el.setAttribute('src',el.getAttribute('data-src'));
+    el.setAttribute('alt', 'Picture of ' + restaurant.name + 'restaurant');
+
     image.append(el);
   });
 
