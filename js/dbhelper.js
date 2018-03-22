@@ -200,25 +200,6 @@ class DBHelper {
     return [webp,jpeg,fallback];
   }
 
-  static getImageDetails(restaurant) {
-    var response = {
-      name: '',
-      filetype: ''
-    };
-    var details = [];
-    if (restaurant.photograph) {
-      details = restaurant.photograph.split('.') || [];
-      response.filetype = "jpg";
-      response.name = restaurant.photograph;
-    } else {
-      response.name = "logo";
-      response.filetype = "png";
-    }
-
-    // We use details.length-2 to get rid of the trailing punctuation as well from the name
-    return response;
-  }
-
   /**
    * Map marker for a restaurant.
    */
