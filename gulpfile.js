@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const responsive = require('gulp-responsive');
-const inlineCss = require('gulp-inline-css');
+const inlineCss = require('gulp-inline-style');
+const cleanCss = require('gulp-clean-css');
 
 gulp.task('images', function () {
   return gulp.src('img/*.{jpg,png}')
@@ -38,10 +39,16 @@ gulp.task('images', function () {
     .pipe(gulp.dest('img/dist'));
 });
 
-gulp.task('css', function() {
+gulp.task('css',['minify-css'], function() {
+    gulp.src('./*.html')
+    .pipe(inlineCss('./.tmp/'))
+    .pipe(gulp.dest('dist'));
+})
 
-  return gulp.src('./*.html')
-  .pipe(inlineCss())
-  .pipe(gulp.dest('dist/'));
+gulp.task('minify-css', function() {
+
+  return gulp.src('./css/*.css')
+  .pipe(cleanCss())
+  .pipe(gulp.dest('./.tmp/css'));
 
 });
