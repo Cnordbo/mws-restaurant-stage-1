@@ -1,6 +1,6 @@
 const gulp = require('gulp');
 const responsive = require('gulp-responsive');
-
+const inlineCss = require('gulp-inline-css');
 
 gulp.task('images', function () {
   return gulp.src('img/*.{jpg,png}')
@@ -36,4 +36,12 @@ gulp.task('images', function () {
       withMetadata: false,
     }))
     .pipe(gulp.dest('img/dist'));
+});
+
+gulp.task('css', function() {
+
+  return gulp.src('./*.html')
+  .pipe(inlineCss())
+  .pipe(gulp.dest('dist/'));
+
 });
