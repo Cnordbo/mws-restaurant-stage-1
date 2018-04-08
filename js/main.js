@@ -19,7 +19,11 @@ observer = new IntersectionObserver(changes => {
     var targets = change.target.childNodes;
     for (const target of targets) {
       target.setAttribute('srcset',target.getAttribute('data-srcset'));
-      target.setAttribute('src',target.getAttribute('data-src'));
+      if (target.tagName === 'IMG') {
+        // src is not supported on SOURCE elements soon (deprecation warning)
+        target.setAttribute('src',target.getAttribute('data-src'));
+      }
+
     }
     observer.unobserve(change.target);
   }

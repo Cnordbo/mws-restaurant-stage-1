@@ -1,9 +1,9 @@
 var self = this;
-const cacheName = "mws-stage-1-r2";
+const cacheName = "mws-stage-3-r2";
 
 self.addEventListener("install", event => {
   console.log("Installing");
-  const staticFiles = ["/","/index.html","/manifest.json","/js/common.js","/js/dbhelper.js","/js/main.js","/js/idb.js","/js/restaurant_info.js","/css/styles.css"];
+  const staticFiles = ["/","/index.html","/manifest.json","/js/common-min.js","/js/main-min.js", "/js/restaurant_info-min.js"];
   event.waitUntil(caches.open(cacheName).then(cache => {
     return cache.addAll(staticFiles);
   }));

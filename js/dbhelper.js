@@ -167,14 +167,14 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForFile(filename,ext) {
-    return (`/img/dist/${filename}-original.${ext}`);
+    return (`/img/${filename}-original.${ext}`);
   }
 
   static srcsetForRestaurant(filename,ext) {
     let src = '';
-    src += `/img/dist/${filename}-320px.${ext} 320w, `;
-    src += `/img/dist/${filename}-640px.${ext} 640w, `;
-    src += `/img/dist/${filename}-640px.${ext} 2x`;
+    src += `/img/${filename}-320px.${ext} 320w, `;
+    src += `/img/${filename}-640px.${ext} 640w, `;
+    src += `/img/${filename}-640px.${ext} 2x`;
     return src;
   }
 
@@ -186,16 +186,13 @@ class DBHelper {
     }
     let jpeg = document.createElement('SOURCE');
     jpeg.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(filename,ext));
-    jpeg.setAttribute('data-src',DBHelper.imageUrlForFile(filename,ext));
 
     let webp = document.createElement('SOURCE');
     webp.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(filename,'webp'));
-    webp.setAttribute('data-src',DBHelper.imageUrlForFile(filename,'webp'));
     webp.setAttribute('type','image/webp');
 
     let fallback = document.createElement('img');
     fallback.setAttribute('data-srcset',DBHelper.srcsetForRestaurant(filename,ext));
-    fallback.setAttribute('data-src', DBHelper.imageUrlForFile(filename,ext));
 
     return [webp,jpeg,fallback];
   }

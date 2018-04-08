@@ -19,7 +19,13 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.9.3",
+    "gulp-concat": "^2.6.1",
     "gulp-inline-style": "^0.1.1",
-    "gulp-responsive": "^2.9.0"
+    "gulp-minify": "^2.1.0",
+    "gulp-responsive": "^2.9.0",
+    "gulp-serve": "^1.4.0",
+    "gulp-sourcemap": "^1.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "uglify-js": "^3.3.20"
   }
 }
