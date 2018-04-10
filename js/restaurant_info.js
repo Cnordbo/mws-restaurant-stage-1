@@ -14,8 +14,14 @@ window.initMap = () => {
         center: restaurant.latlng,
         scrollwheel: false
       });
+      document.getElementById("restaurant_id").value = restaurant.id;
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      var form = document.getElementById('add-review-form');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        postReview();
+      })
     }
   });
 }
@@ -43,6 +49,41 @@ fetchRestaurantFromURL = (callback) => {
       callback(null, restaurant)
     });
   }
+}
+
+/**
+ * Credits: https://gist.github.com/seamusleahy/e63911a939f73ec8588bd472ed07980d
+ */
+postReview = () => {
+  console.log('Posting review');
+  // 1. Setup the request
+  // ================================
+  // 1.1 Headers
+  var headers = new Headers();
+  // Tell the server we want JSON back
+  headers.set('Accept', 'application/json');
+
+  // 1.2 Form Data
+  // We need to properly format the submitted fields.
+  // Here we will use the same format the browser submits POST forms.
+  // You could use a different format, depending on your server, such
+  // as JSON or XML.
+  var formData = new FormData();
+  var formEl = document.getElementById('add-review-form');
+  for (var i = 0; i < formEl.length; ++i) {
+    formData.append(formEl[i].name, formEl[i].value);
+  }
+
+  // 2. Make the request
+  // ================================
+  var url = 'http://localhost:1337/reviews/';
+  var fetchOptions = {
+    method: 'POST',
+    headers,
+    body: formData
+  };
+
+  var responsePromise = fetch(url, fetchOptions);
 }
 
 /**
