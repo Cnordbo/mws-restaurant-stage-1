@@ -9,33 +9,43 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}`;
   }
 
   static openDatabase() {
     return idb.open("MWS", 1, function(upgradeDb) {
-      var store = upgradeDb.createObjectStore('restaurants', {
-        keyPath: 'id'
-      });
-      store.createIndex('cuisine','cuisine_type');
-      store.createIndex('neighborhood','neighborhood');
+      switch(upgradeDb.oldVersion) {
+        case 0:
+        case 1:
+          var restaurants = upgradeDb.createObjectStore('restaurants', {
+            keyPath: 'id'
+          });
+          restaurants.createIndex('cuisine','cuisine_type');
+          restaurants.createIndex('neighborhood','neighborhood');
+        case 2:
+          console.log("Upgrading DB");
+          var reviews = upgradeDb.createObjectStore('reviews', {
+            keyPath: 'id'
+          });
+          reviews.createIndex('restaurant','restaurant_id');
+      }
     });
   }
 
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants() {
+  static getRestaurants() {
     return new Promise((resolve,reject) => {
 
       DBHelper.openDatabase().then(db => {
         let tx = db.transaction('restaurants');
         let store = tx.objectStore('restaurants');
-        store.getAll().then(result => {
-          if (result && result.length > 0) {
-            resolve(result);
+        store.getAll().then(restaurants => {
+          if (restaurants && restaurants.length > 0) {
+            resolve(restaurants);
           } else {
-            DBHelper.fetchFromWebAndSaveToDb().then(listFromWeb => {
+            DBHelper.updateRestaurants().then(listFromWeb => {
               resolve(listFromWeb);
             }).catch(reject);
           }
@@ -44,22 +54,70 @@ class DBHelper {
     });
   }
 
-  static fetchFromWebAndSaveToDb() {
+  /**
+   * Fetch all reviews.
+   */
+  static getReviews(restaurantId) {
     return new Promise((resolve,reject) => {
 
-      fetch(DBHelper.DATABASE_URL)
+      DBHelper.openDatabase().then(db => {
+        let tx = db.transaction('reviews');
+        let store = tx.objectStore('reviews').index('restaurant');
+        store.getAll(restaurantId).then(result => {
+          if (result && result.length > 0) {
+            resolve(result);
+          } else {
+            DBHelper.updateReviews(restaurantId).then(listFromWeb => {
+              resolve(listFromWeb);
+            }).catch(reject);
+          }
+        });
+      }).catch(reject);
+    });
+  }
+
+  static updateReviews(restaurantId) {
+    return new Promise((resolve,reject) => {
+
+      fetch(DBHelper.DATABASE_URL + '/reviews?restaurant_id=' + restaurantId)
       .then(response => {
         response.json()
         .then(data => {
           DBHelper.openDatabase()
           .then(db => {
-            var tx = db.transaction("restaurants", "readwrite");
-            var store = tx.objectStore("restaurants");
+            var tx = db.transaction("reviews", "readwrite");
+            var store = tx.objectStore("reviews");
             data.forEach(element => {
+              element.restaurant_id = parseInt(element.restaurant_id);
+              element.rating = parseInt(element.rating);
               store.put(element);
             });
           });
           return resolve(data);
+        });
+      });
+
+    })
+
+  }
+
+  static updateRestaurants() {
+    return new Promise((resolve,reject) => {
+
+      fetch(DBHelper.DATABASE_URL + '/restaurants')
+      .then(response => {
+        response.json()
+        .then(restaurants => {
+          DBHelper.openDatabase()
+          .then(db => {
+            var tx = db.transaction("restaurants", "readwrite");
+            var store = tx.objectStore("restaurants");
+            restaurants.forEach(element => {
+              store.put(element);
+            });
+          });
+          this.updateReviews();
+          return resolve(restaurants);
         });
       });
 
@@ -81,6 +139,22 @@ class DBHelper {
         callback(null,result);
       }).catch((e) => {
         callback(e,null)
+      });
+    });
+  }
+
+  static fetchReviewsForRestaurantId(id) {
+    return new Promise((resolve, reject) => {
+      DBHelper.openDatabase()
+      .then(db => {
+        let tx = db.transaction('reviews');
+        let store = tx.objectStore('reviews').index('restaurant');
+        return store.getAll(parseInt(id))
+      .then(resolve)
+      .catch((e) => {
+        console.error('Could not get reviews for Restaurant', e);
+        resolve([]);
+      });
       });
     });
   }
@@ -122,7 +196,7 @@ class DBHelper {
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
 
-    DBHelper.fetchRestaurants().then(results => {
+    DBHelper.getRestaurants().then(results => {
       if (cuisine != 'all') { // filter by cuisine
         results = results.filter(r => r.cuisine_type == cuisine);
       }
@@ -139,7 +213,7 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
-    DBHelper.fetchRestaurants().then(result => {
+    DBHelper.getRestaurants().then(result => {
       const neighborhoods = result.map((v, i) => result[i].neighborhood)
       callback(null,neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i));
     })
@@ -150,7 +224,7 @@ class DBHelper {
    */
   static fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants().then(result => {
+    DBHelper.getRestaurants().then(result => {
       const cuisines = result.map((v, i) => result[i].cuisine_type)
       callback(null,cuisines.filter((v, i) => cuisines.indexOf(v) == i));
     })

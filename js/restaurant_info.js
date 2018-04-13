@@ -5,50 +5,54 @@ var map;
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      document.getElementById("restaurant_id").value = restaurant.id;
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-      var form = document.getElementById('add-review-form');
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        postReview();
-      })
-    }
+  if (self.restaurant) {
+    return loadMap();
+  }
+  setTimeout(initMap,50);
+}
+
+window.loadMap = () => {
+  self.map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 16,
+    center: self.restaurant.latlng,
+    scrollwheel: false
   });
+  DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
 }
 
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromURL = (callback) => {
-  if (self.restaurant) { // restaurant already fetched!
-    callback(null, self.restaurant)
-    return;
-  }
-  const id = getParameterByName('id');
-  if (!id) { // no id found in URL
-    error = 'No restaurant id in URL'
-    callback(error, null);
-  } else {
-    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
-      self.restaurant = restaurant;
-      if (!restaurant) {
-        console.error(error);
-        return;
-      }
-      fillRestaurantHTML();
-      callback(null, restaurant)
-    });
-  }
+fetchRestaurantFromURL = () => {
+  return new Promise((resolve, reject) => {
+
+    if (self.restaurant) { // restaurant already fetched!
+      return resolve(self.restaurant)
+    }
+    const id = getParameterByName('id');
+    if (!id) { // no id found in URL
+      error = 'No restaurant id in URL'
+      return reject(error);
+    } else {
+      DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+        self.restaurant = restaurant;
+        if (!restaurant) {
+          console.error(error);
+          return reject(error);
+        }
+        console.log('Fetching reviews');
+        DBHelper.getReviews(self.restaurant.id)
+        .then((reviews) => {
+          console.log('Reviews: ', reviews);
+          self.restaurant.reviews = reviews;
+          return resolve(self.restaurant);
+        }).catch(e => {
+          console.error('Could not fetch reviews',e);
+          return reject(e);
+        })
+      });
+    }
+  });
 }
 
 /**
@@ -68,10 +72,16 @@ postReview = () => {
   // Here we will use the same format the browser submits POST forms.
   // You could use a different format, depending on your server, such
   // as JSON or XML.
-  var formData = new FormData();
+  var data = new FormData();
   var formEl = document.getElementById('add-review-form');
   for (var i = 0; i < formEl.length; ++i) {
-    formData.append(formEl[i].name, formEl[i].value);
+    var fieldName = formEl[i].name;
+    var value = formEl[i].value;
+    if (fieldName === "" || value === "") continue;
+    if (fieldName === "restaurant_id" || fieldName === "rating") {
+      value = parseInt(value);
+    }
+    data.append([formEl[i].name],value);
   }
 
   // 2. Make the request
@@ -80,10 +90,21 @@ postReview = () => {
   var fetchOptions = {
     method: 'POST',
     headers,
-    body: formData
+    body: data
   };
 
   var responsePromise = fetch(url, fetchOptions);
+  responsePromise.then((response) => response.json())
+  .then(review => {
+    console.log("Reviews successfully posted", review);
+    review.restaurant_id = parseInt(review.restaurant_id);
+    review.rating = parseInt(review.rating);
+    self.restaurant.reviews.push(review);
+    DBHelper.updateReviews(self.restaurant.id).then(() => {
+      formEl.reset();
+      fillReviewsHTML();
+    });
+  })
 }
 
 /**
@@ -143,11 +164,8 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
 
-  if (!reviews) {
+  if (!reviews || !reviews.length) {
     const noReviews = document.createElement('p');
     noReviews.setAttribute('tabindex','0');
     noReviews.innerHTML = 'No reviews yet!';
@@ -155,6 +173,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
+  ul.innerHTML = '';
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -174,7 +193,7 @@ createReviewHTML = (review) => {
   section.appendChild(name);
 
   const date = document.createElement('span');
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.updatedAt).toLocaleDateString();
   date.classList.add("date");
   date.setAttribute('tabindex','0');
   section.appendChild(date);
@@ -220,3 +239,21 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+(()=> {
+  fetchRestaurantFromURL()
+  .then((restaurant) => {
+    DBHelper.getReviews(restaurant.id);
+    document.getElementById("restaurant_id").value = restaurant.id;
+    fillBreadcrumb();
+    var form = document.getElementById('add-review-form');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      postReview();
+    })
+  })
+  .then(fillRestaurantHTML)
+  .catch((error) => {
+    console.error('Init Error: ', error);
+  });
+})();
