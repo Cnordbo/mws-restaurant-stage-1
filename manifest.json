@@ -3,12 +3,12 @@
   "name": "Christer`s Restaurant Review App",
   "icons": [
     {
-      "src": "/img/dist/logo-320px.png",
+      "src": "/img/logo-320px.png",
       "type": "image/png",
       "sizes": "320x320"
     },
     {
-      "src": "/img/dist/logo-original.png",
+      "src": "/img/logo-original.png",
       "type": "image/png",
       "sizes": "720x720"
     }

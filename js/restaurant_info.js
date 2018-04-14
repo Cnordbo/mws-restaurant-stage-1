@@ -55,24 +55,9 @@ fetchRestaurantFromURL = () => {
   });
 }
 
-/**
- * Credits: https://gist.github.com/seamusleahy/e63911a939f73ec8588bd472ed07980d
- */
-postReview = () => {
-  console.log('Posting review');
-  // 1. Setup the request
-  // ================================
-  // 1.1 Headers
-  var headers = new Headers();
-  // Tell the server we want JSON back
-  headers.set('Accept', 'application/json');
+submitReviewForm = () => {
 
-  // 1.2 Form Data
-  // We need to properly format the submitted fields.
-  // Here we will use the same format the browser submits POST forms.
-  // You could use a different format, depending on your server, such
-  // as JSON or XML.
-  var data = new FormData();
+  var review = {};
   var formEl = document.getElementById('add-review-form');
   for (var i = 0; i < formEl.length; ++i) {
     var fieldName = formEl[i].name;
@@ -81,30 +66,13 @@ postReview = () => {
     if (fieldName === "restaurant_id" || fieldName === "rating") {
       value = parseInt(value);
     }
-    data.append([formEl[i].name],value);
+    review[formEl[i].name] = value;
   }
+  formEl.reset();
 
   // 2. Make the request
   // ================================
-  var url = 'http://localhost:1337/reviews/';
-  var fetchOptions = {
-    method: 'POST',
-    headers,
-    body: data
-  };
-
-  var responsePromise = fetch(url, fetchOptions);
-  responsePromise.then((response) => response.json())
-  .then(review => {
-    console.log("Reviews successfully posted", review);
-    review.restaurant_id = parseInt(review.restaurant_id);
-    review.rating = parseInt(review.rating);
-    self.restaurant.reviews.push(review);
-    DBHelper.updateReviews(self.restaurant.id).then(() => {
-      formEl.reset();
-      fillReviewsHTML();
-    });
-  })
+  postReview(review);
 }
 
 /**
@@ -249,8 +217,20 @@ getParameterByName = (name, url) => {
     var form = document.getElementById('add-review-form');
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      postReview();
+      submitReviewForm();
     })
+
+    document.addEventListener("reviews_updated", e => {
+      console.log("Got reviews updated event",e);
+      console.log("current restaurant",self.restaurant);
+      if (e.detail.restaurant_id === self.restaurant.id) {
+        console.log("Updating review list");
+        DBHelper.getReviews(self.restaurant.id).then(reviews => {
+          self.restaurant.reviews = reviews;
+          fillReviewsHTML(reviews);
+        })
+      }
+    });
   })
   .then(fillRestaurantHTML)
   .catch((error) => {

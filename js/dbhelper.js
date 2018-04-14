@@ -13,7 +13,7 @@ class DBHelper {
   }
 
   static openDatabase() {
-    return idb.open("MWS", 1, function(upgradeDb) {
+    return idb.open("MWS", 3, function(upgradeDb) {
       switch(upgradeDb.oldVersion) {
         case 0:
         case 1:
@@ -23,11 +23,14 @@ class DBHelper {
           restaurants.createIndex('cuisine','cuisine_type');
           restaurants.createIndex('neighborhood','neighborhood');
         case 2:
-          console.log("Upgrading DB");
+          console.log("Upgrading to DB v2.0");
           var reviews = upgradeDb.createObjectStore('reviews', {
             keyPath: 'id'
           });
           reviews.createIndex('restaurant','restaurant_id');
+        case 3:
+          console.log("Upgrading to DB v3.0");
+          var offline_reviews = upgradeDb.createObjectStore('offline_reviews', {keyPath: 'id'});
       }
     });
   }
@@ -93,12 +96,47 @@ class DBHelper {
               store.put(element);
             });
           });
+          var event = new CustomEvent("reviews_updated", {detail: {restaurant_id: restaurantId}});
+          document.dispatchEvent(event);
           return resolve(data);
         });
       });
 
     })
+  }
 
+  static storeOfflineReview(review) {
+    DBHelper.openDatabase().then(db => {
+      var tx = db.transaction("offline_reviews","readwrite");
+      var store = tx.objectStore("offline_reviews");
+      store.add({id: Date.now(), data: review});
+    })
+  }
+
+  static getOfflineReviews() {
+    console.log("Getting offline reviews");
+    return new Promise((resolve,reject) => {
+      DBHelper.openDatabase().then(db => {
+        var tx = db.transaction("offline_reviews");
+        var store = tx.objectStore("offline_reviews");
+        store.getAll().then(data => {
+          return resolve(data);
+        }).catch(e => {
+          reject(e);
+        });
+      })
+    })
+  }
+
+  static clearOfflineReviews() {
+    console.log("Clearing offline reviews");
+    return new Promise((resolve, reject) => {
+      DBHelper.openDatabase().then(db => {
+        var tx = db.transaction("offline_reviews", "readwrite");
+        tx.objectStore("offline_reviews").clear();
+        return resolve();
+      }).catch(reject);
+    });
   }
 
   static updateRestaurants() {

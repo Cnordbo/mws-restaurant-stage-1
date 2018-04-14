@@ -4,7 +4,7 @@ const inlineCss = require('gulp-inline-style');
 const cleanCss = require('gulp-clean-css');
 const minifyJs = require('gulp-minify');
 const concatJs = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
+//const sourcemaps = require('gulp-sourcemaps');
 const serve = require('gulp-serve');
 
 gulp.task('images', function () {
@@ -59,10 +59,10 @@ gulp.task('minify-css', function() {
 
 gulp.task('concat-js', function() {
   gulp.src(['./js/common.js','./js/dbhelper.js','./js/idb.js'])
-  .pipe(sourcemaps.init())
+  //.pipe(sourcemaps.init())
   .pipe(concatJs('common.js'))
   .pipe(minifyJs())
-  .pipe(sourcemaps.write())
+  //.pipe(sourcemaps.write())
   .pipe(gulp.dest('dist/js'))
 
   gulp.src('./js/main.js')
@@ -91,4 +91,6 @@ gulp.task('copy-serviceworker', function() {
 
 gulp.task('default',['images','css','concat-js','copy-serviceworker','watch', 'serve'])
 
-gulp.task('serve', serve('dist'));
+gulp.task('serve', serve({
+  root: ['dist']
+}));
