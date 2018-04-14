@@ -151,10 +151,11 @@ class DBHelper {
             var tx = db.transaction("restaurants", "readwrite");
             var store = tx.objectStore("restaurants");
             restaurants.forEach(element => {
+              element.is_favorite = element.is_favorite ? (element.is_favorite.toString() == "true" ? true : false) : false;
               store.put(element);
             });
           });
-          this.updateReviews();
+          DBHelper.updateReviews();
           return resolve(restaurants);
         });
       });

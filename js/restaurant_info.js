@@ -208,6 +208,20 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+toggleFavorite = (isFavorite) => {
+  self.restaurant.is_favorite = isFavorite;
+  const url = "http://localhost:1337/restaurants/" + self.restaurant.id + "/?is_favorite=" + isFavorite;
+
+  var headers = new Headers();
+  headers.set('Accept', 'application/json');
+  var fetchOptions = {
+    method: 'PUT',
+    headers
+  };
+  fetch(url, fetchOptions)
+  .then(DBHelper.updateRestaurants);
+}
+
 (()=> {
   fetchRestaurantFromURL()
   .then((restaurant) => {
@@ -219,6 +233,15 @@ getParameterByName = (name, url) => {
       e.preventDefault();
       submitReviewForm();
     })
+
+    var favorite = document.getElementById('chkFavorite');
+    if (restaurant.is_favorite) {
+      favorite.checked = true;
+    }
+
+    favorite.addEventListener('change',e => {
+      toggleFavorite(e.target.checked);
+    });
 
     document.addEventListener("reviews_updated", e => {
       console.log("Got reviews updated event",e);
