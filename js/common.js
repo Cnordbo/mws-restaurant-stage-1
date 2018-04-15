@@ -5,7 +5,19 @@ if (navigator.serviceWorker) {
   })
 }
 
+var mapObserver = new IntersectionObserver(changes => {
+  for (const change of changes) {
+    if (!change.isIntersecting) return;
+    requestAnimationFrame(() => {
+      document.getElementById("map").classList.remove("hidden");
+      google.maps.event.trigger(map, 'resize');
+    })
+      mapObserver.unobserve(change.target);
+  }
+});
+
 onOnline = () => {
+  document.querySelector('body').classList.remove('offline');
   console.log("Just went online");
   DBHelper.getOfflineReviews().then(reviews => {
     DBHelper.clearOfflineReviews().then(() => {
@@ -16,7 +28,7 @@ onOnline = () => {
 }
 
 onOffline = () => {
-  console.log("Just went offline");
+  document.querySelector('body').classList.add('offline');
 }
 
 postReview = (pReview) => {

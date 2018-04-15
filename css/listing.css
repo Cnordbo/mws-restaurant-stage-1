@@ -33,9 +33,25 @@
     margin: 10px;
   }
 }
+
+
+#listing-container {
+  order: 2;
+}
+#map-container {
+  order: 1;
+}
+
 @media screen and (max-width: 640px) {
   .filter-options h2 {
     display:none;
+  }
+
+  #map-container {
+    order: 2;
+  }
+  #listing-container {
+    order: 1;
   }
 }
 
@@ -93,7 +109,6 @@
   text-decoration: none;
   text-transform: uppercase;
 }
-
 
 #neighborhoods-select:focus, #cuisines-select:focus {
   border: 3px solid black;

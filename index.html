@@ -14,12 +14,13 @@
   <header>
     <nav>
       <h1><a href="/">Restaurant Reviews</a></h1>
+      <h3 id="offline-msg" role="alert">Offline</h3>
     </nav>
   </header>
 
   <main id="maincontent">
-    <section id="map-container" style="display:none">
-      <div id="map" aria-hidden="true" role="application"></div>
+    <section id="map-container" >
+      <div id="map" class="hidden" aria-hidden="true" role="application"></div>
     </section>
     <section id="listing-container">
       <div class="filter-options">
@@ -33,6 +34,7 @@
       </div>
       <ul id="restaurants-list"></ul>
     </section>
+
   </main>
   <script type="application/javascript" charset="utf-8" src="js/common-min.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main-min.js"></script>

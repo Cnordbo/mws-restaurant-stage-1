@@ -2,8 +2,8 @@ let restaurants,
   neighborhoods,
   cuisines,
   observer;
-var map
-var markers = []
+var map;
+var markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -23,7 +23,6 @@ observer = new IntersectionObserver(changes => {
         // src is not supported on SOURCE elements soon (deprecation warning)
         target.setAttribute('src',target.getAttribute('data-src'));
       }
-
     }
     observer.unobserve(change.target);
   }
@@ -122,6 +121,8 @@ updateRestaurants = () => {
     } else {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
+      // We dont want the observer to start looking for the element before content is loaded
+      mapObserver.observe(document.getElementById('map-container'));
     }
   })
 }

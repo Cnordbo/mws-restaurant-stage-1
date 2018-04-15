@@ -105,6 +105,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+  mapObserver.observe(document.getElementById('map-container'));
 }
 
 /**

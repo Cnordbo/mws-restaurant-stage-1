@@ -1,19 +1,6 @@
 /* ====================== Restaurant Details ====================== */
-.inside #maincontent {
-  display: flex;
-  flex-wrap: wrap;
-}
-.inside #map-container {
-  background: blue none repeat scroll 0 0;
-  min-height: 300px;
-  width: 100%;
-  order: 0;
-}
-.inside #map {
-  background-color: #ccc;
-  height: 100%;
-  width: 100%;
-}
+
+
 #restaurant-name {
   color: #f18200;
   font-family: Arial,sans-serif;
@@ -143,6 +130,12 @@ form#add-review-form textarea {
   height: 5em;
   padding: 5px;
   font-size: 16px;
+}
+
+@media screen and (max-width: 899px) {
+  .inside #map-container {
+    order: 2;
+  }
 }
 
 @media screen and (min-width:900px) {
