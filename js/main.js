@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchCuisines();
 });
 
+/**
+ * Will hot-load images as soon as the element is within the current viewport
+ *
+ */
 observer = new IntersectionObserver(changes => {
   for (const change of changes) {
     if (!change.isIntersecting) return;

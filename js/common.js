@@ -5,6 +5,10 @@ if (navigator.serviceWorker) {
   })
 }
 
+/**
+ * Takes advantage of delaying the images from the map, until the map-container
+ * is within the viewport.
+ */
 var mapObserver = new IntersectionObserver(changes => {
   for (const change of changes) {
     if (!change.isIntersecting) return;
@@ -16,24 +20,31 @@ var mapObserver = new IntersectionObserver(changes => {
   }
 });
 
+/**
+ * Event method fired when solution goes online
+ * Makes sure that any offline reviews gets submitted to the server
+ */
 onOnline = () => {
   document.querySelector('body').classList.remove('offline');
-  console.log("Just went online");
   DBHelper.getOfflineReviews().then(reviews => {
     DBHelper.clearOfflineReviews().then(() => {
-      console.log("Posting Reviews loop", reviews);
       reviews.forEach((review) => postReview(review.data));
     })
   });
 }
 
+/**
+ * Event method fired when solution goes offline
+ * Adds a visual indication to the site that we are offline
+ */
 onOffline = () => {
   document.querySelector('body').classList.add('offline');
 }
 
+/**
+ * Submit a review to the server - Stores it offline if it fails.
+ */
 postReview = (pReview) => {
-  console.log("Posting review");
-
   var headers = new Headers();
   // Tell the server we want JSON back
   headers.set('Accept', 'application/json');
@@ -55,14 +66,11 @@ postReview = (pReview) => {
   var responsePromise = fetch(url, fetchOptions);
   responsePromise.then((response) => response.json())
   .then(review => {
-    console.log("Reviews successfully posted", review);
     review.restaurant_id = parseInt(review.restaurant_id);
     review.rating = parseInt(review.rating);
-    console.log("Post-Review submit", review);
     DBHelper.updateReviews(review.restaurant_id)
   }).catch(e => {
     console.error(e);
-    console.log("Storing offline", pReview);
     DBHelper.storeOfflineReview(pReview);
   })
 }

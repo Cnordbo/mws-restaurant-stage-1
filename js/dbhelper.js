@@ -12,7 +12,14 @@ class DBHelper {
     return `http://localhost:${port}`;
   }
 
-  static openDatabase() {
+/**
+ * Open the local database and run migrations if needed
+ *
+ * @static
+ * @returns {IDBObjectStore}
+ * @memberof DBHelper
+ */
+static openDatabase() {
     return idb.open("MWS", 3, function(upgradeDb) {
       switch(upgradeDb.oldVersion) {
         case 0:
@@ -36,7 +43,12 @@ class DBHelper {
   }
 
   /**
-   * Fetch all restaurants.
+   * Get all restaurants
+   * Updates locally cached restaurants if list is empty
+   *
+   * @static
+   * @returns
+   * @memberof DBHelper
    */
   static getRestaurants() {
     return new Promise((resolve,reject) => {
@@ -58,7 +70,13 @@ class DBHelper {
   }
 
   /**
-   * Fetch all reviews.
+   * Get offline-first reviews for restaurant
+   * Updates reviews from server if list is empty
+   *
+   * @static
+   * @param {int} restaurantId
+   * @returns {Promise{object}} List of reviews
+   * @memberof DBHelper
    */
   static getReviews(restaurantId) {
     return new Promise((resolve,reject) => {
@@ -78,8 +96,15 @@ class DBHelper {
       }).catch(reject);
     });
   }
-
-  static updateReviews(restaurantId) {
+/**
+ * Update locally cached reviews for restaurant
+ *
+ * @static
+ * @param {int} restaurantId
+ * @returns {Promise{object}} A promise with resolved reviews
+ * @memberof DBHelper
+ */
+static updateReviews(restaurantId) {
     return new Promise((resolve,reject) => {
 
       fetch(DBHelper.DATABASE_URL + '/reviews?restaurant_id=' + restaurantId)
@@ -104,17 +129,28 @@ class DBHelper {
 
     })
   }
-
-  static storeOfflineReview(review) {
+/**
+ * Save a review to the offline cache
+ *
+ * @static
+ * @param {object} review
+ * @memberof DBHelper
+ */
+static storeOfflineReview(review) {
     DBHelper.openDatabase().then(db => {
       var tx = db.transaction("offline_reviews","readwrite");
       var store = tx.objectStore("offline_reviews");
       store.add({id: Date.now(), data: review});
     })
   }
-
-  static getOfflineReviews() {
-    console.log("Getting offline reviews");
+/**
+ * Get reviews stored while offline
+ *
+ * @static
+ * @returns {Promise{review}} A promise with reviews
+ * @memberof DBHelper
+ */
+static getOfflineReviews() {
     return new Promise((resolve,reject) => {
       DBHelper.openDatabase().then(db => {
         var tx = db.transaction("offline_reviews");
@@ -127,9 +163,14 @@ class DBHelper {
       })
     })
   }
-
-  static clearOfflineReviews() {
-    console.log("Clearing offline reviews");
+/**
+ * Delete new reviews that are stored locally
+ *
+ * @static
+ * @returns {Promise}
+ * @memberof DBHelper
+ */
+static clearOfflineReviews() {
     return new Promise((resolve, reject) => {
       DBHelper.openDatabase().then(db => {
         var tx = db.transaction("offline_reviews", "readwrite");
@@ -139,6 +180,13 @@ class DBHelper {
     });
   }
 
+  /**
+   * Update offline restaurants from database
+   *
+   * @static
+   * @returns {array{object}} Restaurant
+   * @memberof DBHelper
+   */
   static updateRestaurants() {
     return new Promise((resolve,reject) => {
 
@@ -165,7 +213,12 @@ class DBHelper {
   }
 
   /**
-   * Fetch a restaurant by its ID.
+   * Get locally cached restaurant by id
+   *
+   * @static
+   * @param {int} id
+   * @param {function} callback
+   * @memberof DBHelper
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
@@ -181,8 +234,15 @@ class DBHelper {
       });
     });
   }
-
-  static fetchReviewsForRestaurantId(id) {
+/**
+ * Get the locally cached reviews for restaurant
+ *
+ * @static
+ * @param {int} id
+ * @returns {array{object}} Restaurant
+ * @memberof DBHelper
+ */
+static fetchReviewsForRestaurantId(id) {
     return new Promise((resolve, reject) => {
       DBHelper.openDatabase()
       .then(db => {
@@ -291,6 +351,14 @@ class DBHelper {
     return src;
   }
 
+  /**
+   * Generate <source> for restaurant
+   *
+   * @static
+   * @param {any} restaurant
+   * @returns
+   * @memberof DBHelper
+   */
   static getSourcesForRestaurant(restaurant) {
     let filename = restaurant.photograph || 'logo';
     let ext = 'jpg';

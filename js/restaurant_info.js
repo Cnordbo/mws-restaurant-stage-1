@@ -2,7 +2,7 @@ let restaurant;
 var map;
 
 /**
- * Initialize Google map, called from HTML.
+ * Callback method for Google Maps
  */
 window.initMap = () => {
   if (self.restaurant) {
@@ -11,6 +11,9 @@ window.initMap = () => {
   setTimeout(initMap,50);
 }
 
+/**
+ * Load restaurant marker into map
+ */
 window.loadMap = () => {
   self.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 16,
@@ -21,7 +24,8 @@ window.loadMap = () => {
 }
 
 /**
- * Get current restaurant from page URL.
+ * Get restaurant based on page URL
+ * @returns {object} Restaurant
  */
 fetchRestaurantFromURL = () => {
   return new Promise((resolve, reject) => {
@@ -40,14 +44,11 @@ fetchRestaurantFromURL = () => {
           console.error(error);
           return reject(error);
         }
-        console.log('Fetching reviews');
         DBHelper.getReviews(self.restaurant.id)
         .then((reviews) => {
-          console.log('Reviews: ', reviews);
           self.restaurant.reviews = reviews;
           return resolve(self.restaurant);
         }).catch(e => {
-          console.error('Could not fetch reviews',e);
           return reject(e);
         })
       });
@@ -55,6 +56,9 @@ fetchRestaurantFromURL = () => {
   });
 }
 
+/**
+ * Gathers values from the form and submits it to backend server
+ */
 submitReviewForm = () => {
 
   var review = {};
@@ -209,6 +213,12 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+
+/**
+ * Favorite \ Unfavorite current restaurant
+ *
+ * @param {bool} isFavorite
+ */
 toggleFavorite = (isFavorite) => {
   self.restaurant.is_favorite = isFavorite;
   const url = "http://localhost:1337/restaurants/" + self.restaurant.id + "/?is_favorite=" + isFavorite;
@@ -223,6 +233,9 @@ toggleFavorite = (isFavorite) => {
   .then(DBHelper.updateRestaurants);
 }
 
+/**
+ * Initialize
+ */
 (()=> {
   fetchRestaurantFromURL()
   .then((restaurant) => {
