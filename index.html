@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#252831"/>
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/listing.css">
   <title>Restaurant Reviews</title>
 </head>
 
-<body>
+<body id="front">
   <header>
     <nav>
       <h1><a href="/">Restaurant Reviews</a></h1>
@@ -17,10 +18,10 @@
   </header>
 
   <main id="maincontent">
-    <section id="map-container">
+    <section id="map-container" style="display:none">
       <div id="map" aria-hidden="true" role="application"></div>
     </section>
-    <section>
+    <section id="listing-container">
       <div class="filter-options">
         <h2>Filter Results</h2>
         <select id="neighborhoods-select" aria-label="Filter by neighborhood" name="neighborhoods" onchange="updateRestaurants()">
